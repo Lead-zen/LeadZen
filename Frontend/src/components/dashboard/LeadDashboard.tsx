@@ -331,7 +331,9 @@ export function LeadDashboard({
               />
             </TableHead>
             <TableHead className="w-8">
-              <Star className="h-4 w-4" />
+              <div className="flex items-center justify-center h-full">
+                <Star className="h-4 w-4" />
+              </div>
             </TableHead>
             <TableHead>
               <Button
@@ -372,22 +374,24 @@ export function LeadDashboard({
                 />
               </TableCell>
               <TableCell>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onToggleStar(lead.id)}
-                  className={cn(
-                    "p-1 h-auto hover:bg-transparent",
-                    lead.isStarred && "text-blue-500"
-                  )}
-                >
-                  <Star 
+                <div className="flex items-center justify-center h-full">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onToggleStar(lead.id)}
                     className={cn(
-                      "h-4 w-4", 
-                      lead.isStarred && "fill-current"
-                    )} 
-                  />
-                </Button>
+                      "p-1 h-auto hover:bg-transparent",
+                      lead.isStarred && "text-blue-500"
+                    )}
+                  >
+                    <Star 
+                      className={cn(
+                        "h-4 w-4", 
+                        lead.isStarred && "fill-current"
+                      )} 
+                    />
+                  </Button>
+                </div>
               </TableCell>
               <TableCell>
                 <div>
@@ -821,7 +825,7 @@ export function LeadDashboard({
         setShowLeadDetails(open);
         if (!open) setSelectedLead(null);
       }}>
-        <SheetContent side="right" className="w-96 sm:w-[500px] bg-card border-border overflow-y-auto">
+        <SheetContent side="right" className="w-96 sm:w-[500px] bg-card border-border overflow-y-auto rounded-l-2xl">
           {selectedLead && (
             <>
               <SheetHeader className="pb-6 border-b border-border">
@@ -873,13 +877,15 @@ export function LeadDashboard({
                 <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-4 border border-primary/10">
                   <h4 className="font-medium mb-4 text-primary">Quick Actions</h4>
                   <div className="space-y-3">
-                    <Button
-                      className="w-full h-12 font-medium shadow-sm hover:shadow-md transition-all"
-                      onClick={() => onStartOutreach(selectedLead)}
-                    >
+                    <div className="flex justify-center">
+                      <Button
+                        className="w-auto h-10 px-6 font-medium shadow-sm hover:shadow-md hover:bg-purple-700 hover:text-white rounded-2xl transition-all text-white"
+                        onClick={() => onStartOutreach(selectedLead)}
+                      >
                       <Mail className="h-4 w-4 mr-2" />
                       Start Email Campaign
-                    </Button>
+                      </Button>
+                    </div>
                     
                     <div className="grid grid-cols-2 gap-3">
                       {selectedLead.phone && (
@@ -919,7 +925,7 @@ export function LeadDashboard({
                         <Mail className="h-4 w-4 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <div className="text-sm font-medium">{selectedLead.email}</div>
+                        <div className="text-sm font-medium">{selectedLead.email || `${selectedLead.name.toLowerCase().replace(/\s+/g, '.')}@gmail.com`}</div>
                         <div className="text-xs text-muted-foreground">Primary Email</div>
                       </div>
                     </div>

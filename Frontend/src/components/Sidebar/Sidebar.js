@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import MessageBox from "../../components/MessageBox/MessageBox";
-import { Info, BookOpen, LogIn, LogOut, UserCheck, UserLock, CompassIcon, DraftingCompassIcon, LucideCompass, AtomIcon, NewspaperIcon } from "lucide-react";
+import { Info, BookOpen, LogIn, LogOut, UserCheck, UserLock, CompassIcon, DraftingCompassIcon, LucideCompass, AtomIcon, NewspaperIcon, MessageSquareShare } from "lucide-react";
 import "./Sidebar.css";
 
 const Sidebar = () => {
@@ -34,7 +34,7 @@ const Sidebar = () => {
       </div>
 
       <div className="sidebar-middle">
-        <div className="add-section"><button className={`add-button ${location.pathname === "/chat" ? "active" : ""}`} onClick={handleAddClick}>+</button></div>
+        <div className="add-section"><button className={`add-button ${location.pathname === "/chat" ? "active" : ""}`} onClick={handleAddClick}><MessageSquareShare className="add-icon" /><span className="add-label">Chat</span></button></div>
         <nav className="sidebar-nav">
           {menuItems.map(item => {
             const IconComponent = item.icon;

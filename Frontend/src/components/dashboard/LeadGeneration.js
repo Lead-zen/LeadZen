@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Send, CheckCircle, MessageSquare, 
   Save, Mail, Phone, ExternalLink, Sparkles
@@ -10,13 +10,15 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn } from './ui/utils';
 import { chatLeads } from '../../services/chatapi'; // ✅ connect to backend
+import { getLeadsCount } from '../../services/lead'; // ✅ connect to backend for count
 
 export function LeadGeneration({ 
   onLeadsGenerated, 
   stagedLeads, 
   onStageLeads, 
   onMoveStagedLeadsToDatabase, 
-  onStartNewChat 
+  onStartNewChat,
+  onNavigateToLeads
 }) {
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -24,6 +26,22 @@ export function LeadGeneration({
   const [searchTitle, setSearchTitle] = useState('');
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [chatHistory, setChatHistory] = useState([]); // ✅ new
+  const [totalLeadsCount, setTotalLeadsCount] = useState(0);
+
+  // Fetch total leads count on component mount
+  useEffect(() => {
+    const fetchTotalLeadsCount = async () => {
+      try {
+        const response = await getLeadsCount();
+        setTotalLeadsCount(response.count || 0);
+      } catch (error) {
+        console.error('Error fetching leads count:', error);
+        setTotalLeadsCount(0);
+      }
+    };
+    
+    fetchTotalLeadsCount();
+  }, []);
 
   const examplePrompts = [
     "Find CTOs of fintech startups in San Francisco with 50-200 employees",
@@ -53,18 +71,38 @@ export function LeadGeneration({
       ]);
 
       // Backend returns { context, message, leads }
-      const generatedLeads = (response.leads || []).map((lead, index) => ({
-        id: lead.id || `${lead.business_name}-${index}`,
-        company: lead.business_name,
-        email: lead.email || lead.contact_number || '',
-        phone: lead.contact_number,
-        linkedinUrl: lead.website && lead.website.startsWith("http") ? lead.website : null,
-        industry: lead.industry,
-        location: lead.address,
-        description: lead.summary || '',
-        score: lead.lead_score || 0,
-        chatTitle: prompt.slice(0, 50) + (prompt.length > 50 ? '...' : '')
-      }));
+      const generatedLeads = (response.leads || []).map((lead, index) => {
+        // Extract name from various possible fields
+        const name = lead.contact_name || lead.owner_name || lead.manager_name || lead.name || 
+                    lead.contact_person || lead.manager || lead.owner || null;
+        
+        // Extract title from various possible fields
+        const title = lead.job_title || lead.position || lead.role || lead.title || 
+                     lead.designation || lead.occupation || null;
+        
+        // Generate tags based on industry and other data
+        const generatedTags = [];
+        if (lead.industry) generatedTags.push(lead.industry);
+        if (lead.business_type) generatedTags.push(lead.business_type);
+        if (lead.location) generatedTags.push(lead.location.split(',')[0].trim()); // City name
+        if (lead.contact_type) generatedTags.push(lead.contact_type);
+        
+        return {
+          id: lead.id || `${lead.business_name}-${index}`,
+          name: name,
+          title: title,
+          company: lead.business_name,
+          email: lead.email || lead.contact_email || null,
+          phone: lead.contact_number || lead.phone || lead.telephone || null,
+          linkedinUrl: lead.website && lead.website.startsWith("http") ? lead.website : lead.linkedin_url || null,
+          industry: lead.industry || lead.business_type || null,
+          location: lead.address || lead.location || lead.city || null,
+          description: lead.summary || lead.description || '',
+          score: lead.lead_score || lead.score || Math.floor(Math.random() * 100),
+          tags: lead.tags ? (Array.isArray(lead.tags) ? lead.tags : lead.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)) : generatedTags,
+          chatTitle: prompt.slice(0, 50) + (prompt.length > 50 ? '...' : '')
+        };
+      });
 
       const chatTitle = prompt.slice(0, 50) + (prompt.length > 50 ? '...' : '');
       onStageLeads(generatedLeads, chatTitle);
@@ -127,66 +165,265 @@ export function LeadGeneration({
     <div className="h-full flex flex-col w-full">
       {/* Results Header */}
       {stagedLeads.length > 0 && (
-        <div className="bg-card border-b border-border">
-          <div className="p-2 sm:p-3">
-            <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 bg-green-500/10 rounded-lg flex items-center justify-center">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+        <div className="bg-white border-b border-gray-200 shadow-sm">
+          <div className="px-6 py-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 bg-green-50 rounded-full flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Search Results</h2>
+                    <p className="text-sm text-gray-600">
+                      Found {stagedLeads.length} leads • {selectedLeads.length} selected
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold">Search Results</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Found {stagedLeads.length} leads • {selectedLeads.length} selected
-                  </p>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handleNewSearch}
+                    className="gap-2 w-full sm:w-auto hover:bg-blue-50 hover:border-blue-300 border-gray-300"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    New Search
+                  </Button>
+                  <Button
+                    onClick={handleSaveSelected}
+                    disabled={selectedLeads.length === 0}
+                    className="gap-2 w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    <Save className="h-4 w-4" />
+                    Save Selected ({selectedLeads.length})
+                  </Button>
                 </div>
-              </div>
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={handleNewSearch}
-                className="gap-2 w-full sm:w-auto hover:bg-[#E0F2FE] hover:border-blue-300"
-              >
-                <MessageSquare className="h-4 w-4" />
-                New Search
-              </Button>
-              <Button
-                onClick={handleSaveSelected}
-                disabled={selectedLeads.length === 0}
-                className="gap-2 w-full sm:w-auto text-white"
-              >
-                <Save className="h-4 w-4" />
-                Save Selected ({selectedLeads.length})
-              </Button>
               </div>
             </div>
           </div>
           
-          {/* Chat history - directly under header */}
+          {/* Chat history - clean section */}
           {chatHistory.length > 0 && (
-            <div className="px-3 pb-3">
-              <div className="max-w-3xl mx-auto space-y-2">
-                {chatHistory.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={cn(
-                      "p-2 rounded-lg max-w-lg",
-                      msg.role === "user"
-                        ? "bg-[#E0F2FE] text-gray-800 ml-auto rounded-br-sm"
-                        : "bg-gray-100 text-gray-800 mr-auto rounded-bl-sm border border-gray-200"
-                    )}
-                  >
-                    <p className="text-sm">{msg.text}</p>
-                  </div>
-                ))}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+              <div className="max-w-4xl mx-auto">
+                <h3 className="text-sm font-medium text-gray-700 mb-3">Conversation</h3>
+                <div className="space-y-3">
+                  {chatHistory.map((msg, idx) => (
+                    <div
+                      key={idx}
+                      className={cn(
+                        "p-3 rounded-lg shadow-sm",
+                        msg.role === "user"
+                          ? "bg-blue-500 text-white ml-auto rounded-br-sm max-w-xs"
+                          : "bg-white text-gray-800 mr-auto rounded-bl-sm border border-gray-200 max-w-2xl"
+                      )}
+                    >
+                      <p className="text-sm leading-relaxed text-center">{msg.text}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
         </div>
       )}
 
+      {/* Generated Leads Section - clean design */}
+      {stagedLeads.length > 0 && (
+        <div className="flex-1 bg-gray-50">
+          <div className="px-6 py-6">
+            <div className="max-w-6xl mx-auto">
+              {/* Section Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">Generated Leads</h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Review and select the leads you want to save
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={selectAllLeads}
+                  className="w-full sm:w-auto border-gray-300 hover:bg-gray-50"
+                >
+                  {selectedLeads.length === stagedLeads.length ? 'Deselect All' : 'Select All'}
+                </Button>
+              </div>
+
+              {/* Leads Table */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+
+                {/* Table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="w-12 px-6 py-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedLeads.length === stagedLeads.length && stagedLeads.length > 0}
+                            onChange={selectAllLeads}
+                            className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                          />
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Title</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Industry</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Score</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Tags</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {stagedLeads.map((lead) => (
+                        <tr
+                          key={lead.id}
+                          className={cn(
+                            "hover:bg-gray-50 cursor-pointer transition-colors",
+                            selectedLeads.includes(lead.id) && "bg-purple-50"
+                          )}
+                          onClick={() => toggleLeadSelection(lead.id)}
+                        >
+                          <td className="px-6 py-4">
+                            <input
+                              type="checkbox"
+                              checked={selectedLeads.includes(lead.id)}
+                              onChange={() => toggleLeadSelection(lead.id)}
+                              className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                            />
+                          </td>
+                          <td className="px-6 py-4">
+                            <div>
+                              {lead.name && (
+                                <div className="text-sm font-medium text-gray-900">{lead.name}</div>
+                              )}
+                              {(lead.email || lead.phone) && (
+                                <div className="text-sm text-gray-500">{lead.email || lead.phone}</div>
+                              )}
+                              {!lead.name && !lead.email && !lead.phone && (
+                                <div className="text-sm text-gray-400 italic">Contact info not available</div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 hidden lg:table-cell">
+                            {lead.title && (
+                              <div className="text-sm text-gray-900">{lead.title}</div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">{lead.company}</div>
+                              <div className="text-sm text-gray-500">{lead.location}</div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 hidden md:table-cell">
+                            {lead.industry && lead.industry !== 'N/A' && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                {lead.industry}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={cn(
+                              "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+                              lead.score >= 90 
+                                ? "bg-green-100 text-green-800" 
+                                : lead.score >= 75 
+                                ? "bg-yellow-100 text-yellow-800" 
+                                : "bg-gray-100 text-gray-800"
+                            )}>
+                              {lead.score || 0}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 hidden lg:table-cell">
+                            {lead.tags && lead.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {lead.tags.map((tag, tagIndex) => (
+                                  <span
+                                    key={tagIndex}
+                                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-2">
+                              {lead.email && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(`mailto:${lead.email}`, '_blank');
+                                  }}
+                                  className="h-8 w-8 p-0 hover:bg-blue-50"
+                                  title="Send Email"
+                                >
+                                  <Mail className="h-4 w-4 text-blue-600" />
+                                </Button>
+                              )}
+                              {lead.phone && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(`tel:${lead.phone}`, '_blank');
+                                  }}
+                                  className="h-8 w-8 p-0 hover:bg-green-50"
+                                  title="Call"
+                                >
+                                  <Phone className="h-4 w-4 text-green-600" />
+                                </Button>
+                              )}
+                              {lead.linkedinUrl && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(lead.linkedinUrl, '_blank');
+                                  }}
+                                  className="h-8 w-8 p-0 hover:bg-blue-50"
+                                  title="View Profile"
+                                >
+                                  <ExternalLink className="h-4 w-4 text-blue-600" />
+                                </Button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              {/* Load More Leads Button */}
+              <div className="mt-6 text-center">
+                <Button
+                  onClick={() => onNavigateToLeads && onNavigateToLeads()}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-2 rounded-lg font-medium"
+                >
+                  Load More Leads
+                  {totalLeadsCount > 0 && (
+                    <span className="ml-2 text-sm opacity-90">
+                      ({totalLeadsCount} total in database)
+                    </span>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 overflow-y-auto w-full">
-        {stagedLeads.length === 0 ? (
+        {stagedLeads.length === 0 && (
           <div className="relative h-full bg-white">
             <div className="max-w-4xl mx-auto space-y-4 w-full px-6 py-8">
               <div className="text-center">
@@ -283,18 +520,26 @@ export function LeadGeneration({
                       width: '100%'
                     }}
                   >
-                    <textarea
-                      value={prompt}
-                      onChange={(e) => setPrompt(e.target.value)}
-                      placeholder="Describe your ideal leads... (e.g., 'find CTOs at Series A startups in fintech')"
-                      className="flex-1 resize-none focus:outline-none border-0 bg-transparent"
-                      style={{
-                        fontSize: '14px',
-                        color: '#374151',
-                        minHeight: '40px'
-                      }}
-                      disabled={isGenerating}
-                    />
+                    <div className="flex-1 flex items-center">
+                      <textarea
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSubmit(e);
+                          }
+                        }}
+                        placeholder="Describe your ideal leads... (e.g., 'find CTOs at Series A startups in fintech')"
+                        className="flex-1 resize-none focus:outline-none border-0 bg-transparent"
+                        style={{
+                          fontSize: '14px',
+                          color: '#374151',
+                          minHeight: '40px'
+                        }}
+                        disabled={isGenerating}
+                      />
+                    </div>
                     <div 
                       className="flex-shrink-0 cursor-pointer transition-all duration-200 rounded-full p-2 hover:bg-opacity-25"
                       style={{
@@ -323,132 +568,6 @@ export function LeadGeneration({
                     </div>
                   </div>
                 </form>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full">
-            {/* Results table - directly under header */}
-            <div className="bg-card rounded-lg border w-full">
-              <div className="p-2 sm:p-3 border-b border-border">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <h3 className="font-semibold">Generated Leads</h3>
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={selectAllLeads}
-                      className="w-full sm:w-auto"
-                    >
-                      {selectedLeads.length === stagedLeads.length ? 'Deselect All' : 'Select All'}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[600px]">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="w-12 p-2 sm:p-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedLeads.length === stagedLeads.length && stagedLeads.length > 0}
-                          onChange={selectAllLeads}
-                          className="rounded"
-                        />
-                      </th>
-                      <th className="text-left p-2 sm:p-4 font-medium min-w-[120px]">Company</th>
-                      <th className="text-left p-2 sm:p-4 font-medium min-w-[100px] hidden md:table-cell">Industry</th>
-                      <th className="text-left p-2 sm:p-4 font-medium w-16">Score</th>
-                      <th className="text-left p-2 sm:p-4 font-medium w-20">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stagedLeads.map((lead) => (
-                      <tr
-                        key={lead.id}
-                        className={cn(
-                          "hover:bg-muted/50 cursor-pointer border-b",
-                          selectedLeads.includes(lead.id) && "bg-muted/30"
-                        )}
-                        onClick={() => toggleLeadSelection(lead.id)}
-                      >
-                        <td className="p-2 sm:p-4">
-                          <input
-                            type="checkbox"
-                            checked={selectedLeads.includes(lead.id)}
-                            onChange={() => toggleLeadSelection(lead.id)}
-                            className="rounded"
-                          />
-                        </td>
-                        <td className="p-2 sm:p-4 min-w-[120px]">
-                          <div>
-                            <div className="font-medium truncate">{lead.company}</div>
-                            <div className="text-xs text-muted-foreground truncate">{lead.location}</div>
-                          </div>
-                        </td>
-                        <td className="p-2 sm:p-4 min-w-[100px] hidden md:table-cell">
-                          <Badge variant="outline" className="text-xs truncate">
-                            {lead.industry}
-                          </Badge>
-                        </td>
-                        <td className="p-2 sm:p-4 w-16">
-                          <Badge 
-                            variant={lead.score >= 90 ? "default" : lead.score >= 75 ? "secondary" : "outline"}
-                            className="font-medium"
-                          >
-                            {lead.score}
-                          </Badge>
-                        </td>
-                        <td className="p-2 sm:p-4 w-20">
-                          <div className="flex items-center gap-1">
-                            {lead.email && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.open(`mailto:${lead.email}`, '_blank');
-                                }}
-                                className="h-8 w-8 p-0"
-                              >
-                                <Mail className="h-4 w-4" />
-                              </Button>
-                            )}
-                            {lead.phone && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.open(`tel:${lead.phone}`, '_blank');
-                                }}
-                                className="h-8 w-8 p-0"
-                              >
-                                <Phone className="h-4 w-4" />
-                              </Button>
-                            )}
-                            {lead.linkedinUrl && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.open(lead.linkedinUrl, '_blank');
-                                }}
-                                className="h-8 w-8 p-0"
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
               </div>
             </div>
           </div>

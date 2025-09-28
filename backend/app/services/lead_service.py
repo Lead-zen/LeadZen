@@ -36,6 +36,31 @@ class LeadService:
 
         return [lead.model_dump() for lead in leads]
 
+    async def count_leads(
+        self,
+        user_id: Optional[uuid.UUID] = None,  # 🔹 add user_id
+        industry: Optional[str] = None,
+        min_lead_score: Optional[int] = None,
+        max_lead_score: Optional[int] = None
+    ) -> int:
+        from sqlmodel import func, select
+        
+        query = select(func.count(Lead.id))
+
+        # 🔹 filter by user_id if provided
+        if user_id:
+            query = query.where(Lead.user_id == user_id)
+
+        if industry:
+            query = query.where(Lead.industry.ilike(f"%{industry}%"))
+        if min_lead_score is not None:
+            query = query.where(Lead.lead_score >= min_lead_score)
+        if max_lead_score is not None:
+            query = query.where(Lead.lead_score <= max_lead_score)
+
+        result = await self.session.exec(query)
+        return result.one()
+
     async def get_lead(self, lead_id: uuid.UUID) -> dict:
         lead = await self.session.get(Lead, lead_id)
         if not lead:

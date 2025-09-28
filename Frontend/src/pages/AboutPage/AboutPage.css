@@ -628,7 +628,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
-  overflow-x: auto;
+  overflow: hidden;
   position: relative;
   z-index: 2;
 }
@@ -666,7 +666,7 @@
 .card-back {
   width: 100%;
   height: 100%;
-  border-radius: 24px;
+  border-radius: 8px;
   background: var(--dark);
   position: absolute;
   top: 0;
@@ -710,7 +710,7 @@ figure,
 
 img {
   height: 100%;
-  border-radius: 24px;
+  border-radius: 8px;
 }
 
 figcaption {
@@ -731,7 +731,7 @@ figcaption {
 }
 
 .card-front figcaption {
-  font-size: 1.4rem;
+  font-size: 1rem;
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   letter-spacing: 1px;
@@ -745,8 +745,8 @@ figcaption {
   top: auto;
   margin-top: 0;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
+  padding: 0.8rem 1.2rem;
+  border-radius: 6px;
   backdrop-filter: blur(10px);
 }
 
@@ -799,8 +799,8 @@ ul {
 li {
   width: 100%;
   margin: 0;
-  padding: 8px 0;
-  font-size: 14px;
+  padding: 6px 0;
+  font-size: 12px;
   text-align: left;
   position: relative;
   color: var(--white-1);
@@ -1111,8 +1111,18 @@ button:focus+.design-container {
   font-weight: 700;
   color: #6B21A8;
   line-height: 1.1;
-  margin: 0 0 4rem 0;
+  margin: 0 0 1rem 0;
   letter-spacing: -0.02em;
+}
+
+.how-it-works-headline {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #374151;
+  line-height: 1.2;
+  margin: 0 0 4rem 0;
+  letter-spacing: -0.01em;
+  text-align: center;
 }
 
 .timeline-container {
@@ -1230,6 +1240,14 @@ button:focus+.design-container {
 
 .step-right .step-content {
   flex-direction: row-reverse;
+}
+
+.step-right .step-details {
+  margin-right: 1rem;
+}
+
+.step-left .step-details {
+  margin-left: 1rem;
 }
 
 .step-number {

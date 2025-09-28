@@ -37,17 +37,17 @@ module.exports = {
           900: '#134E4A',
         },
         accent: {
-          DEFAULT: '#FF6B35', // Orange/red
-          50: '#FFF7ED',
-          100: '#FFEDD5',
-          200: '#FED7AA',
-          300: '#FDBA74',
-          400: '#FB923C',
-          500: '#FF6B35',
-          600: '#E85C2E',
-          700: '#CC4F29',
-          800: '#9A3412',
-          900: '#7C2D12',
+          DEFAULT: '#E0FFFF', // Light blue
+          50: '#F0FFFF',
+          100: '#E0FFFF',
+          200: '#B0E0E6',
+          300: '#87CEEB',
+          400: '#87CEFA',
+          500: '#E0FFFF',
+          600: '#B0E0E6',
+          700: '#87CEEB',
+          800: '#5F9EA0',
+          900: '#4682B4',
         },
         neutral: {
           DEFAULT: '#1F2937', // Dark gray
@@ -67,7 +67,7 @@ module.exports = {
           app: '#F9FAFB',
           card: '#FFFFFF',
           highlight: 'rgba(0, 255, 209, 0.05)', // Secondary with 5% opacity
-          alert: 'rgba(255, 107, 53, 0.05)', // Accent with 5% opacity
+          alert: 'rgba(224, 255, 255, 0.05)', // Accent with 5% opacity
         },
         // Button colors
         button: {
@@ -88,12 +88,12 @@ module.exports = {
             textDisabled: '#4B5563',
           },
           destructive: {
-            DEFAULT: '#FF6B35',
-            hover: '#E85C2E',
-            active: '#CC4F29',
-            disabled: '#FFB49A',
-            text: '#FFFFFF',
-            textDisabled: '#FFF3F0',
+            DEFAULT: '#E0FFFF',
+            hover: '#B0E0E6',
+            active: '#87CEEB',
+            disabled: '#F0FFFF',
+            text: '#1F2937',
+            textDisabled: '#4B5563',
           },
         },
         // Table colors

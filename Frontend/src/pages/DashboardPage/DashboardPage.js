@@ -773,6 +773,7 @@ const DashboardPage = () => {
                 onStageLeads={stageLeads}
                 onMoveStagedLeadsToDatabase={moveStagedLeadsToDatabase}
                 onStartNewChat={startNewChat}
+                onNavigateToLeads={() => setCurrentView('leads')}
               />
             )}
           {currentView === 'leads' && (

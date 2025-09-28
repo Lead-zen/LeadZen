@@ -86,16 +86,13 @@
 }
 
 .add-button {
-  width: 35px;
-  height: 35px;
-  min-width: 35px;
-  min-height: 35px;
-  max-width: 35px;
-  max-height: 35px;
-  border-radius: 50%;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 8px;
   background: transparent;
   border: 1px solid #E5E7EB;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -105,8 +102,9 @@
   box-sizing: border-box;
   font-weight: 500;
   font-size: 16px;
-  padding: 0;
+  padding: 6px;
   margin: 0;
+  gap: 6px;
 }
 
 .add-button:hover {
@@ -116,10 +114,29 @@
   transform: scale(1.05);
 }
 
+.add-button:hover .add-icon {
+  transform: scale(1.05);
+  color: #6B21A8;
+}
+
+.add-button:hover .add-label {
+  color: #6B21A8;
+}
+
 .add-button.active {
   background: rgba(107, 33, 168, 0.15);
   border-color: #6B21A8;
   color: #6B21A8;
+}
+
+.add-button.active .add-icon {
+  color: #6B21A8;
+  transform: scale(1.1);
+}
+
+.add-button.active .add-label {
+  color: #6B21A8;
+  font-weight: 600;
 }
 
 .add-button:active {
@@ -127,6 +144,27 @@
   border-color: #6B21A8;
   color: #6B21A8;
   transform: scale(0.95);
+}
+
+.add-icon {
+  width: 16px;
+  height: 16px;
+  transition: all 0.2s ease-in-out;
+}
+
+.add-label {
+  font-size: 10px !important;
+  font-weight: 600;
+  color: #1F2937;
+  text-align: center !important;
+  white-space: nowrap;
+  width: 100%;
+  display: block !important;
+  line-height: 1.0;
+  overflow: visible;
+  text-overflow: unset;
+  flex-shrink: 0;
+  transition: all 0.2s ease-in-out;
 }
 
 .add-button:disabled {
@@ -147,6 +185,7 @@
   width: 100%;
   padding: 8px; /* Reduced padding */
   gap: 12px; /* Reduced gap */
+  margin-top: 40px; /* Add more space above navigation items */
 }
 
 /* Navigation */
@@ -472,7 +511,7 @@
   max-height: 32px; /* 8px * 4 */
   border-radius: 50%;
   background: transparent;
-  border: 1px solid #E5E7EB;
+  border: 0.5px solid #E5E7EB;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -522,12 +561,30 @@
   transition: all 0.2s ease-in-out;
 }
 
+.user-icon {
+  color: #1F2937;
+  width: 16px;
+  height: 16px;
+  transition: all 0.2s ease-in-out;
+  stroke-width: 1.5;
+}
+
 .signin-button:hover .signin-icon {
   color: #6B21A8;
   transform: scale(1.05);
 }
 
 .signin-button:active .signin-icon {
+  color: #6B21A8;
+  transform: scale(0.95);
+}
+
+.signin-button:hover .user-icon {
+  color: #6B21A8;
+  transform: scale(1.05);
+}
+
+.signin-button:active .user-icon {
   color: #6B21A8;
   transform: scale(0.95);
 }

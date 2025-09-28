@@ -146,7 +146,7 @@ export function Sidebar({
             className={cn(
               "w-full justify-start gap-3 h-12 px-3 rounded-lg transition-all",
               isActive && "bg-primary text-primary-foreground shadow-sm",
-              !isActive && "hover:bg-accent/50"
+              !isActive && "hover:bg-[#E0FFFF]"
             )}
             onClick={() => onViewChange(item.id)}
           >

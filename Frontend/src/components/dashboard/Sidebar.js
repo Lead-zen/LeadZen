@@ -143,8 +143,8 @@ export function Sidebar({
             className={cn(
               "w-full justify-start gap-3 h-auto px-3 py-2 rounded-xl transition-all duration-200 relative border",
               isActive && "!bg-[#EDE9FE] border-purple-200 text-[#6B21A8]",
-              !isActive && "hover:bg-[#E0F2FE] hover:border-blue-200 text-gray-700 border-transparent",
-              "hover:bg-[#E0F2FE] hover:border-blue-200"
+              !isActive && "hover:bg-[#E0FFFF] hover:border-blue-200 text-gray-700 border-transparent",
+              "hover:bg-[#E0FFFF] hover:border-blue-200"
             )}
             onClick={() => onViewChange(item.id)}
           >

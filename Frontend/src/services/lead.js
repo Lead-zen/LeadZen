@@ -13,6 +13,11 @@ export const listLeads = async (filters = {}) => {
   return response.data;
 };
 
+export const getLeadsCount = async (filters = {}) => {
+  const response = await api.get(API_BASE_URL + "/count", { params: filters });
+  return response.data;
+};
+
 export const getLead = async (leadId) => {
   const response = await api.get(`${API_BASE_URL}/${leadId}`);
   return response.data;

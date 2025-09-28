@@ -362,22 +362,22 @@ const AboutPage = () => {
               <div className="card-front">
                 <figure>
                   <div className="img-bg"></div>
-                  <img src="https://images.unsplash.com/photo-1486162928267-e6274cb3106f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" alt="Lead Generation" />
-                  <figcaption>Lead Generation</figcaption>
+                  <img src="/features 1.jpg" alt="AI-Powered Lead Discovery" />
+                  <figcaption>AI-Powered Lead Discovery</figcaption>
                 </figure>
               </div>
 
               <div className="card-back">
                 <figure>
                   <div className="img-bg"></div>
-                  <img src="https://images.unsplash.com/photo-1486162928267-e6274cb3106f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" alt="Lead Generation" />
+                  <img src="/features 1.jpg" alt="AI-Powered Lead Discovery" />
                 </figure>
                 <ul>
-                  <li>AI-Powered Targeting</li>
-                  <li>Advanced Analytics</li>
-                  <li>Real-time Insights</li>
-                  <li>Custom Filters</li>
-                  <li>Export Options</li>
+                  <li>Instantly find the right prospects with AI-driven search</li>
+                  <li>Filter by industry or location</li>
+                  <li>Save hours of manual research</li>
+                  <li>Advanced targeting algorithms</li>
+                  <li>Real-time data analysis</li>
                 </ul>
                 <button>Get Started</button>
                 <div className="design-container">
@@ -400,22 +400,22 @@ const AboutPage = () => {
               <div className="card-front">
                 <figure>
                   <div className="img-bg"></div>
-                  <img src="https://images.unsplash.com/photo-1545436864-cd9bdd1ddebc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" alt="Email Marketing" />
-                  <figcaption>Email Marketing</figcaption>
+                  <img src="/features 2.jpg" alt="Smart Outreach Automation" />
+                  <figcaption>Smart Outreach Automation</figcaption>
                 </figure>
               </div>
 
               <div className="card-back">
                 <figure>
                   <div className="img-bg"></div>
-                  <img src="https://images.unsplash.com/photo-1545436864-cd9bdd1ddebc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" alt="Email Marketing" />
+                  <img src="/features 2.jpg" alt="Smart Outreach Automation" />
                 </figure>
                 <ul>
-                  <li>Automated Sequences</li>
-                  <li>Personalized Content</li>
-                  <li>A/B Testing</li>
-                  <li>Performance Tracking</li>
-                  <li>Template Library</li>
+                  <li>Send personalized emails at scale</li>
+                  <li>Automated follow-ups</li>
+                  <li>AI-crafted messages that connect</li>
+                  <li>Boost conversions</li>
+                  <li>Smart sequence optimization</li>
                 </ul>
                 <button>Learn More</button>
                 <div className="design-container">
@@ -438,22 +438,22 @@ const AboutPage = () => {
               <div className="card-front">
                 <figure>
                   <div className="img-bg"></div>
-                  <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=500&fit=crop&auto=format" alt="Analytics Dashboard" />
-                  <figcaption>Analytics Dashboard</figcaption>
+                  <img src="/features 3.jpg" alt="Global Compliance Standards" />
+                  <figcaption>Global Compliance Standards</figcaption>
                 </figure>
               </div>
 
               <div className="card-back">
                 <figure>
                   <div className="img-bg"></div>
-                  <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=500&fit=crop&auto=format" alt="Analytics Dashboard" />
+                  <img src="/features 3.jpg" alt="Global Compliance Standards" />
                 </figure>
                 <ul>
-                  <li>Real-time Metrics</li>
-                  <li>Custom Reports</li>
-                  <li>Data Visualization</li>
-                  <li>Export Capabilities</li>
-                  <li>Team Collaboration</li>
+                  <li>Built-in GDPR compliance</li>
+                  <li>CCPA protection standards</li>
+                  <li>Global data protection</li>
+                  <li>Safe and compliant outreach</li>
+                  <li>Automated compliance checks</li>
                 </ul>
                 <button>View Demo</button>
                 <div className="design-container">
@@ -476,22 +476,22 @@ const AboutPage = () => {
               <div className="card-front">
                 <figure>
                   <div className="img-bg"></div>
-                  <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=500&h=500&fit=crop&auto=format" alt="CRM Integration" />
-                  <figcaption>CRM Integration</figcaption>
+                  <img src="/features 4.jpg" alt="Performance Insights & Analytics" />
+                  <figcaption>Performance Insights & Analytics</figcaption>
                 </figure>
               </div>
 
               <div className="card-back">
                 <figure>
                   <div className="img-bg"></div>
-                  <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=500&h=500&fit=crop&auto=format" alt="CRM Integration" />
+                  <img src="/features 4.jpg" alt="Performance Insights & Analytics" />
                 </figure>
                 <ul>
-                  <li>Seamless Sync</li>
-                  <li>Data Management</li>
-                  <li>Workflow Automation</li>
-                  <li>Team Collaboration</li>
-                  <li>Real-time Updates</li>
+                  <li>Track opens, replies, and conversions in real time</li>
+                  <li>Clear dashboards and insights</li>
+                  <li>Optimize campaigns for better results</li>
+                  <li>Advanced performance metrics</li>
+                  <li>Data-driven decision making</li>
                 </ul>
                 <button>Learn More</button>
                 <div className="design-container">
@@ -511,17 +511,17 @@ const AboutPage = () => {
       </section>
 
 
-      {/* How It Works Section - Zig-Zag Timeline */}
+      {/* How It Works Section */}
       <section className="how-it-works-section">
         <div className="how-it-works-container">
-          <h1 className="how-it-works-title">How it All Works</h1>
+          <h1 className="how-it-works-title">How it works</h1>
+          <h2 className="how-it-works-headline">From Frustration to Discovery</h2>
           
           <div className="timeline-container" data-active-step={activeStep}>
             {/* Line Segments */}
             <div className="timeline-segment timeline-segment-1"></div>
             <div className="timeline-segment timeline-segment-2"></div>
             <div className="timeline-segment timeline-segment-3"></div>
-            <div className="timeline-segment timeline-segment-4"></div>
             
             {/* Step 1 - Right Side */}
             <div 
@@ -532,16 +532,13 @@ const AboutPage = () => {
               <div className="step-content">
                 <div className="step-number">1</div>
                 <div className="step-details">
-                  <h3 className="step-title">Get Started</h3>
+                  <h3 className="step-title">Start Smarter Conversations</h3>
                   <p className="step-description">
-                    Begin your journey by creating an account and setting up your profile. It only takes a few minutes to get started.
+                    Skip clunky forms. Simply chat your ideal company profile – sector, size, location – like briefing an expert.
                   </p>
                   <div className="step-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                      <circle cx="9" cy="7" r="4"/>
-                      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                     </svg>
                   </div>
                 </div>
@@ -557,9 +554,9 @@ const AboutPage = () => {
               <div className="step-content">
                 <div className="step-number">2</div>
                 <div className="step-details">
-                  <h3 className="step-title">Configure Settings</h3>
+                  <h3 className="step-title">AI Finds the Hidden Gems</h3>
                   <p className="step-description">
-                    Customize your preferences and configure the settings that work best for your specific needs and requirements.
+                    No more sifting. AI scans vast data, pinpointing companies that perfectly fit. Precision research at lightning speed.
                   </p>
                   <div className="step-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -580,9 +577,9 @@ const AboutPage = () => {
               <div className="step-content">
                 <div className="step-number">3</div>
                 <div className="step-details">
-                  <h3 className="step-title">Enjoy Results</h3>
+                  <h3 className="step-title">Actionable Insights, Immediate Impact</h3>
                   <p className="step-description">
-                    Sit back and watch as our platform delivers the results you need, with real-time updates and comprehensive analytics.
+                    Get curated lists with vital intelligence to understand, qualify, and connect. Move from discovery to meaningful engagement, faster.
                   </p>
                   <div className="step-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

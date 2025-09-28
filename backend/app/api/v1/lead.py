@@ -35,6 +35,24 @@ async def list_leads(
     )
     return [LeadRead.model_validate(l) for l in leads]
 
+# Get leads count
+@router.get("/count")
+async def get_leads_count(
+    industry: Optional[str] = Query(None, description="Filter by industry"),
+    min_lead_score: Optional[int] = Query(None, description="Minimum lead score"),
+    max_lead_score: Optional[int] = Query(None, description="Maximum lead score"),
+    session: AsyncSession = Depends(get_session),
+    user: User = Depends(get_current_user),  # only logged-in users
+):
+    service = LeadService(session)
+    count = await service.count_leads(
+        user_id=user.id,  # filter only leads for this user
+        industry=industry,
+        min_lead_score=min_lead_score,
+        max_lead_score=max_lead_score
+    )
+    return {"count": count}
+
 # Get lead by ID
 @router.get("/{lead_id}", response_model=LeadRead)
 async def get_lead(lead_id: uuid.UUID, session: AsyncSession = Depends(get_session)):
