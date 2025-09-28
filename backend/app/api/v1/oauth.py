@@ -1,0 +1,107 @@
+from fastapi import APIRouter, HTTPException, Request, Depends, Response
+from fastapi.responses import RedirectResponse
+from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlmodel import select
+
+from app.services import oauth_service
+from app.db.session import get_session
+from app.models.users import User
+from app.services.auth_service import AuthService
+from app.utils.jwt import create_access_token
+from app.core.config import get_settings
+
+settings = get_settings()
+router = APIRouter(prefix="/oauth", tags=["OAuth"])
+
+FRONTEND_URL = "http://localhost:3000"  # ⚠️ update for production
+
+
+@router.get("/google/login")
+def google_login():
+    """
+    Redirect user to Google's OAuth 2.0 login page.
+    """
+    url = oauth_service.get_google_login_url(
+        client_id=settings.GOOGLE_CLIENT_ID,
+        redirect_uri=settings.GOOGLE_REDIRECT_URI,
+    )
+    return RedirectResponse(url)
+
+
+@router.get("/google/callback")
+async def google_callback(
+    request: Request, session: AsyncSession = Depends(get_session)
+):
+    """
+    Handle OAuth callback from Google.
+    If user exists → log them in, else → register new account with default role.
+    """
+    code = request.query_params.get("code")
+    if not code:
+        raise HTTPException(status_code=400, detail="Authorization code not found")
+
+    # 1️⃣ Get Google user info
+    userinfo = await oauth_service.exchange_code_for_userinfo(
+        code=code,
+        client_id=settings.GOOGLE_CLIENT_ID,
+        client_secret=settings.GOOGLE_CLIENT_SECRET,
+        redirect_uri=settings.GOOGLE_REDIRECT_URI,
+    )
+
+    google_sub = userinfo.get("id")
+    email = userinfo.get("email")
+    name = userinfo.get("name")
+    picture = userinfo.get("picture")
+
+    if not email:
+        raise HTTPException(status_code=400, detail="Google did not return an email")
+
+    # 2️⃣ Check if user exists
+    result = await session.exec(select(User).where(User.google_sub == google_sub))
+    user = result.one_or_none()
+
+    auth_service = AuthService(session)
+
+    if not user:
+        # 2a. Fallback: check by email
+        result = await session.exec(select(User).where(User.email == email))
+        user = result.one_or_none()
+
+        if user:
+            user.google_sub = google_sub
+            user.profile_pic = picture
+            session.add(user)
+            await session.commit()
+            await session.refresh(user)
+        else:
+            # 2b. Register new user
+            user = await auth_service.register_user(
+                username=name or email.split("@")[0],
+                email=email,
+                password=None,  # ✅ No password for OAuth
+                profile_pic=picture,
+                google_sub=google_sub,
+            )
+    else:
+        # Update profile picture if changed
+        if picture and user.profile_pic != picture:
+            user.profile_pic = picture
+            session.add(user)
+            await session.commit()
+            await session.refresh(user)
+
+    # 3️⃣ Generate tokens
+    access_token = create_access_token(user.id)
+    refresh_token = await auth_service.create_and_store_refresh_token(
+        user, revoke_old=False
+    )
+
+    # 4️⃣ Set cookies + redirect to frontend
+    response = RedirectResponse(url=f"{FRONTEND_URL}/dashboard")
+    response.set_cookie(
+        "access_token", access_token, httponly=True, secure=True, samesite="Lax"
+    )
+    response.set_cookie(
+        "refresh_token", refresh_token, httponly=True, secure=True, samesite="Lax"
+    )
+    return response
