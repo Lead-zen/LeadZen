@@ -1,0 +1,9 @@
+import React from 'react';
+
+export function UnfilledIcon({ className = "h-12 w-12", color = "#6B21A8" }) {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M8.33333 5V11.6667M5 8.33333H11.6667M10 28.3333V35M6.66667 31.6667H13.3333M21.6667 5L25.4767 16.4283L35 20L25.4767 23.5717L21.6667 35L17.8567 23.5717L8.33333 20L17.8567 16.4283L21.6667 5Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
