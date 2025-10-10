@@ -1,3 +1,4 @@
+name: CI/CD Pipeline - Deploy to AWS Lightsail
 name: Deploy to AWS Lightsail (FastAPI + React)
 
 on:
