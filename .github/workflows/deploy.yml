@@ -1,4 +1,4 @@
-name: Deploy to AWS Lightsail (FastAPI + Reacts)
+name: Deploy to AWS Lightsail (FastAPI + React)
 
 on:
   push:
@@ -13,11 +13,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # ✅ Correct SSH key setup
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/lightsail_key.pem
+          echo "${{ secrets.PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/lightsail_key.pem
           chmod 600 ~/.ssh/lightsail_key.pem
+
+      # ✅ Optional test step (use once to confirm connection works)
+      - name: Test SSH connection
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/lightsail_key.pem ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo '✅ SSH connected successfully!'"
 
       - name: Deploy FastAPI & React to Lightsail
         run: |
@@ -30,7 +36,10 @@ jobs:
 
           echo "Updating backend..."
           cd backend
-          source venv/bin/activate || python3 -m venv venv && source venv/bin/activate
+          if [ ! -d "venv" ]; then
+            python3 -m venv venv
+          fi
+          source venv/bin/activate
           pip install -r requirements.txt
           deactivate
 
@@ -43,6 +52,5 @@ jobs:
           pkill -f "uvicorn" || true
           nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
 
-          echo "Deployment successful ✅"
+          echo "✅ Deployment successful!"
           EOF
-
