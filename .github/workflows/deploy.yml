@@ -1,4 +1,4 @@
-name: Deploy to AWS Lightsail (FastAPI + React)
+name: Deploying to AWS Lightsail (FastAPI + React)
 
 on:
   push:
