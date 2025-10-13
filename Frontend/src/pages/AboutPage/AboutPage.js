@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
-import OurTeam from '../../components/OurTeam/OurTeam';
 import './AboutPage.css';
 
 const AboutPage = () => {
@@ -593,26 +592,6 @@ const AboutPage = () => {
           </div>
         </div>
       </section>
-
-      {/* Our Team Section */}
-      <OurTeam />
-
-      {/* Ready for the Ascent Section */}
-      <section className="ready-ascent-section">
-        <div className="ready-ascent-container">
-          <div className="ready-ascent-content">
-            <h2 className="ready-ascent-title">Ready for the Ascent?</h2>
-            <h3 className="ready-ascent-headline">Your next chapter of Growth awaits</h3>
-            <p className="ready-ascent-description">
-              Stop leaving opportunities unexplored. Start a journey of precise lead discovery today.
-            </p>
-            <button className="ready-ascent-cta">
-              Explore Leads Now
-            </button>
-          </div>
-        </div>
-      </section>
-
     </div>
   );
 };
