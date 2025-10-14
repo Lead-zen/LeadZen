@@ -4,7 +4,7 @@ import axiosInstance from "./axiosInstance";
 // ---------------------
 // Guest Chat (no login)
 // ---------------------
-const PUBLIC_API_URL = "http://localhost:8000/chat/";
+const PUBLIC_API_URL = "https://evecta.io/chat/";
 
 /**
  * Sends a chat message for guest (non-logged in user).
